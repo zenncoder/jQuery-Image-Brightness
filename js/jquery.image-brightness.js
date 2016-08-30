@@ -1,4 +1,4 @@
-// fallabck of Object.create for older browsers
+// fallback of Object.create for older browsers
 if(typeof Object.create !== 'function') {
 
 	// defining the same function
@@ -33,9 +33,9 @@ if(typeof Object.create !== 'function') {
 			} else { self.options = $.fn.imageBrightness.options; /* set default options if options set is not an object */ }
 
 			// filling required info to the object
-			self.$element 	  = $(element);
-			self.$imageSource = self.$element.attr('src');
-			self.$filename 	  = self.getFilename(false);
+			self.$element 		= $(element);
+			self.imageSource 	= self.$element.attr('src');
+			self.imageFileName 	= self.getFilename(false);
 
 			// get the image brightness
 			self.calculateBrightness(function(brightness) {
@@ -44,7 +44,7 @@ if(typeof Object.create !== 'function') {
 				$('.jQuery-image-brightness-delete-me').remove();
 
 				var displayValue = self.getDisplayValue(brightness);
-				//console.log('DV of image "' + self.$filename + '" is: ' + displayValue);
+				//console.log('DV of image "' + self.imageFileName + '" is: ' + displayValue);
 
 				// update value to the respective image
 				self.$element.attr({
@@ -96,9 +96,9 @@ if(typeof Object.create !== 'function') {
 		getFilename: function(extension) {
 
 			var self = this;
-			//var filename = self.$imageSource.replace(/^.*[\\\/]/, '');
+			//var filename = self.imageSource.replace(/^.*[\\\/]/, '');
 
-			var filename = self.$imageSource.replace(/\\/g, '/');
+			var filename = self.imageSource.replace(/\\/g, '/');
 			filename = filename.substring(filename.lastIndexOf('/')+ 1);
 			filename = extension ? filename.replace(/[?#].+$/, ''): filename.split('.')[0];
 
@@ -121,7 +121,7 @@ if(typeof Object.create !== 'function') {
 		calculateBrightness: function(callback) { // return value ranges between 0 and 255
 
 			var self = this;
-			//console.log(self.$imageSource);
+			//console.log(self.imageSource);
 
 			// creating alias of the image for reference
 			var img = document.createElement('img');
@@ -129,7 +129,7 @@ if(typeof Object.create !== 'function') {
 			// append reference image to the body
 			$(img).attr({
 
-				'src': self.$imageSource,
+				'src': self.imageSource,
 				'class': 'jQuery-image-brightness-delete-me'
 
 			}).hide();
@@ -142,7 +142,7 @@ if(typeof Object.create !== 'function') {
 			// on image load 
 			img.onload = function() {
 
-				//console.log('Image: '+self.$filename+' is exist!');
+				//console.log('Image: '+self.imageFileName+' is exist!');
 
 				// create canvas and draw image
 				var canvas = document.createElement('canvas');
@@ -183,7 +183,7 @@ if(typeof Object.create !== 'function') {
 
 			img.onerror = function() {
 
-				//console.log('Image: '+self.$filename+' doesn\'t exist!');
+				//console.log('Image: '+self.imageFileName+' doesn\'t exist!');
 
 			}
 
