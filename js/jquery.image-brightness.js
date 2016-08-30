@@ -192,7 +192,7 @@ if(typeof Object.create !== 'function') {
 	};
 
 	// main function declaration
-	$.fn.imageBrightness = function(options, elements) {
+	$.fn.imageBrightness = function(options) {
 
 		// loop through all elements
 		this.each(function() {
