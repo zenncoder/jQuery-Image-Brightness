@@ -64,7 +64,7 @@
 		//$('img#test').imageBrightness();
 		
 		$('.image-wrapper img').imageBrightness({
-			displayReverseValue: true,
+			displayReverseValue: false,
 			appendValue: true
 		});
 
