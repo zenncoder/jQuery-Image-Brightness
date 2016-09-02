@@ -60,12 +60,27 @@
 	<script>
 	$(document).ready(function() {
 
-		//$('.image-wrapper img').imageBrightness();
-		//$('img#test').imageBrightness();
+		// $('img#test').imageBrightness({ reverseValue: false }, function(image, value) {
+		// 	console.log(image);
+		// 	console.log(value);
+		// });
 		
 		$('.image-wrapper img').imageBrightness({
-			displayReverseValue: false,
-			appendValue: true
+
+			reverseValue: false // to reverse the brightness value
+
+		}, function(image, value) { // callback with the image and it's brightness value
+
+			// console.log(image);
+			// console.log(value);
+
+			// brightness value ranges from 0 to 255, 0 is darkest and 255 is brightest
+
+			var tmpElem = $(document.createElement('div')).append(image);
+			var tmpVal 	= '<span>'+value+'</span>';
+			tmpElem.append(tmpVal);
+			$('.image-wrapper').append(tmpElem);
+
 		});
 
 	});

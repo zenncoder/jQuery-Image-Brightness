@@ -15,74 +15,49 @@ if(typeof Object.create !== 'function') {
 
 (function($, window, document, undefined) {
 
+	// main logic
 	var Brightness = {
 
 		// initialize
-		init: function(options, element) {
+		init: function(options, element, callback) {
 			
 			var self = this;
-
-			//console.log(self);
 
 			// accept options as object only
 			if(typeof(options) == 'object') {
 
 				// check if developer has set the options
-				self.options = $.extend({}, $.fn.imageBrightness.options, options);
+				self.options = $.extend({}, $.fn.imageBrightness.defaults, options);
 
-			} else { self.options = $.fn.imageBrightness.options; /* set default options if options set is not an object */ }
+			} else { self.options = $.fn.imageBrightness.defaults; /* set default options if options set is not an object */ }
 
 			// filling required info to the object
-			self.$element 		= $(element);
-			self.imageSource 	= self.$element.attr('src');
-			self.imageFileName 	= self.getFilename(false);
+			self.$element 			= $(element);
+			self.imageSource		= self.$element.attr('src');
+			self.imageFileName 		= self.getFilename(false);
+			self.imageDisplayValue 	= 0;
 
 			// get the image brightness
 			self.calculateBrightness(function(brightness) {
 
 				// deleting the reference image
-				$('.jQuery-image-brightness-delete-me').remove();
+				$('img.jQuery-image-brightness-delete-me').remove();
 
-				var displayValue = self.getDisplayValue(brightness);
-				//console.log('DV of image "' + self.imageFileName + '" is: ' + displayValue);
-
-				// update value to the respective image
-				self.$element.attr({
-					'data-display-reverse': self.options.displayReverseValue,
-					'data-display-value': displayValue
-				});
-
-				// check if asked for value to append
-				if(self.options.appendValue) { // if asked to append value
-					
-					// check need to append value
-					self.appendValue(displayValue);
-
-				}
+				self.imageDisplayValue = self.getDisplayValue(brightness);
+				callback(self);
+				//console.log('Image "' + self.imageFileName + '" is: ' + self.imageDisplayValue);
 
 			});
 
 		},
 
 		// get the display value
-		appendValue: function(displayValue) {
+		getDisplayValue: function(brightness) {
 
 			var self = this;
 
-			var tmpElem = $(document.createElement('div')).append(self.$element);
-			var tmpVal 	= '<span>'+displayValue+'</span>';
-			tmpElem.append(tmpVal);
-			$('.image-wrapper').append(tmpElem);
-
-		},
-
-		// get the display value
-		getDisplayValue: function(brightness) {
-
-			var self = this, displayValue;
-
 			// check if asked for brightness or opposite value
-			if(self.options.displayReverseValue) { // if asked for reverse value
+			if(self.options.reverseValue) { // if asked for reverse value
 				
 				displayValue = 255 - brightness;
 
@@ -96,32 +71,21 @@ if(typeof Object.create !== 'function') {
 		getFilename: function(extension) {
 
 			var self = this;
+
 			//var filename = self.imageSource.replace(/^.*[\\\/]/, '');
 
 			var filename = self.imageSource.replace(/\\/g, '/');
-			filename = filename.substring(filename.lastIndexOf('/')+ 1);
-			filename = extension ? filename.replace(/[?#].+$/, ''): filename.split('.')[0];
+			filename 	 = filename.substring(filename.lastIndexOf('/')+ 1);
+			filename 	 = extension ? filename.replace(/[?#].+$/, ''): filename.split('.')[0];
 
 			return filename;
 
 		},
 
-		// // check if image file exist
-		// function fileExists(imageUrl) {
-
-		// 	var http = new XMLHttpRequest();
-		// 	http.open('HEAD', imageUrl, false);
-		// 	http.send();
-
-		// 	return http.status != 404;
-
-		// },
-
 		// function calculates and returns the brightness of an image
 		calculateBrightness: function(callback) { // return value ranges between 0 and 255
 
 			var self = this;
-			//console.log(self.imageSource);
 
 			// creating alias of the image for reference
 			var img = document.createElement('img');
@@ -130,7 +94,7 @@ if(typeof Object.create !== 'function') {
 			$(img).attr({
 
 				'src': self.imageSource,
-				'class': 'jQuery-image-brightness-delete-me'
+				'class': 'jQuery-image-brightness-delete-me' // need a handle to delete the tmp image after process finished
 
 			}).hide();
 
@@ -192,7 +156,7 @@ if(typeof Object.create !== 'function') {
 	};
 
 	// main function declaration
-	$.fn.imageBrightness = function(options) {
+	$.fn.imageBrightness = function(options, onComplete) {
 
 		// loop through all elements
 		this.each(function() {
@@ -201,7 +165,14 @@ if(typeof Object.create !== 'function') {
 			var brightness = Object.create(Brightness);
 
 			// initialize the process
-			brightness.init(options, this);
+			brightness.init(options, this, function(obj) {
+
+				// make sure the callback is a function
+				if(typeof onComplete == 'function') {
+					onComplete(obj.$element, obj.imageDisplayValue); // brings the scope to the callback
+				}
+
+			});
 
 		});
 
@@ -211,10 +182,9 @@ if(typeof Object.create !== 'function') {
 	};
 
 	// keeping the options beyond the scope of the function to make this available for the developer directly
-	$.fn.imageBrightness.options = {
+	$.fn.imageBrightness.defaults = {
 
-		displayReverseValue: false, // to get contrast value
-		appendValue: false // to append the value to the image tag
+		reverseValue: false, // to get contrast value
 
 	};
 
