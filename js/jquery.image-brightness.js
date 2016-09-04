@@ -188,7 +188,7 @@ if (typeof Object.create !== 'function') {
     // keeping the options beyond the scope of the function to make this available for the developer directly
     $.fn.imageBrightness.defaults = {
 
-        reverseValue: false, // to get contrast value
+        reverseValue: false, // set reverse true to get contrast value
 
     };
 
